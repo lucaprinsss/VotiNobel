@@ -24,13 +24,45 @@ public class Model {
 		mediaMigliore = 0.0;
 		
 		Set<Esame> parziale=new HashSet<Esame>();
-		cerca(parziale,0,m);
+		//cerca1(parziale,0,m);
+		cerca2(parziale,0,m);
 		
 		return migliore;	
 	}
 
 	
-	private void cerca(Set<Esame> parziale, int L, int m) {
+	private void cerca2(Set<Esame> parziale, int L, int m) {
+		//controllare casi terminali
+		
+		int sommaCrediti=sommaCrediti(parziale);
+		
+		if(sommaCrediti > m)   //soluzione non valida
+			return;
+			
+		if (sommaCrediti==m){     //soluzione valida, controlliamo se è la migliore
+			double mediaVoti=calcolaMedia(parziale);
+			if(mediaVoti>mediaMigliore) {
+				migliore=new HashSet<Esame>(parziale);       //se mettessi migliore=parziale salverei in migliore il riferimento a parziale che però cambia nel tempo!!
+				mediaMigliore=mediaVoti;
+			}
+					
+			return;
+		}
+		if(L==esami.size())
+			return;
+		
+		//provo a aggiungere esami[L]
+		parziale.add(esami.get(L));
+		cerca2(parziale,L+1,m);
+		
+		//provo a non aggiungere esami[L]
+		parziale.remove(esami.get(L));
+		cerca2(parziale,L+1,m);
+		
+	}
+
+
+	private void cerca1(Set<Esame> parziale, int L, int m) {
 		//controllare casi terminali
 		
 		int sommaCrediti=sommaCrediti(parziale);
@@ -54,7 +86,7 @@ public class Model {
 		for(Esame e : esami) {
 			if(!parziale.contains(e)) {
 				parziale.add(e);
-				cerca(parziale,L+1,m);
+				cerca1(parziale,L+1,m);
 				parziale.remove(e);        //backtracking.  Se lavorassi con delle liste (che possono avere elementi duplicati) eliminerei solo un duplicato nella lista. Ecco perché con le liste si lavora togliendo l'ultimo elemento inserito: parziale.remove(parziale.size()-1)
 				
 			}
